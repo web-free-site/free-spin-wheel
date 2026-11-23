@@ -7,6 +7,5 @@ custom_domain = true
 
 [assets]
 directory = "./out"
-binding = "ASSETS"
 html_handling = "auto-trailing-slash"
 not_found_handling = "none"
