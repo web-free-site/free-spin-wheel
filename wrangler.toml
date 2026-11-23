@@ -1,0 +1,12 @@
+name = "free-spin-wheel"
+compatibility_date = "2024-11-01"
+
+[[routes]]
+pattern = "free-spin-wheel.web-free.site"
+custom_domain = true
+
+[assets]
+directory = "./out"
+binding = "ASSETS"
+html_handling = "auto-trailing-slash"
+not_found_handling = "none"

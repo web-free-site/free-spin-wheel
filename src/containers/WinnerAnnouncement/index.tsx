@@ -1,0 +1,172 @@
+import { useEffect, useRef, useState } from "react";
+
+// Icons
+import { Trophy, Sparkles, Gift, Volume2, VolumeX } from "lucide-react";
+
+// Utils
+import { Participant } from "@/utils/types/common";
+import { useConfig } from "@/contexts/ConfigContext";
+
+const WinnerAnnouncement: React.FC<{
+  winner: Participant;
+  onClose: () => void;
+  isDark: boolean;
+  giftImage: string | null;
+}> = ({ winner, onClose, isDark, giftImage }) => {
+  const { appConfig } = useConfig();
+  const metaLabel = appConfig.winner.metaLabel;
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const [isMuted, setIsMuted] = useState(!appConfig.winner.celebrationSound);
+
+  // Initialize and start audio on mount
+  useEffect(() => {
+    if (
+      appConfig.audio.winnerSound &&
+      appConfig.winner.celebrationSound &&
+      !isMuted
+    ) {
+      const timer = setTimeout(() => {
+        const winnerAudio = new Audio(appConfig.audio.winnerSound!);
+        winnerAudio.volume = appConfig.audio.volume;
+        winnerAudio.loop = true;
+        audioRef.current = winnerAudio;
+        winnerAudio.play().catch(() => {});
+      }, 100);
+
+      return () => {
+        clearTimeout(timer);
+        if (audioRef.current) {
+          audioRef.current.pause();
+          audioRef.current.currentTime = 0;
+          audioRef.current = null;
+        }
+      };
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Respond to mute toggle
+  useEffect(() => {
+    if (!audioRef.current) return;
+    if (isMuted) {
+      audioRef.current.pause();
+    } else {
+      audioRef.current.play().catch(() => {});
+    }
+  }, [isMuted]);
+
+  // Auto-close after displayDuration
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current.currentTime = 0;
+        audioRef.current = null;
+      }
+      onClose();
+    }, appConfig.winner.displayDuration);
+
+    return () => {
+      clearTimeout(timer);
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current.currentTime = 0;
+        audioRef.current = null;
+      }
+    };
+    // onClose is stable enough; displayDuration is read once on mount intentionally
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [onClose]);
+
+  const handleManualClose = () => {
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.currentTime = 0;
+      audioRef.current = null;
+    }
+    onClose();
+  };
+
+  const toggleMute = () => setIsMuted((v) => !v);
+
+  return (
+    <div
+      className={`fixed inset-0 ${
+        isDark ? "bg-black/20" : "bg-black/60"
+      } animate-overlayShow z-[70] backdrop-blur-sm flex items-center justify-center z-50 p-4`}
+    >
+      <div
+        className={`bg-gradient-to-br from-yellow-400 via-yellow-300 to-amber-400 p-1 rounded-3xl shadow-2xl max-w-2xl w-full mx-auto`}
+      >
+        <div
+          className={`${
+            isDark ? "bg-gray-800" : "bg-white"
+          } p-6 md:p-10 rounded-3xl text-center relative`}
+        >
+          {appConfig.audio.winnerSound && (
+            <button
+              onClick={toggleMute}
+              className={`absolute top-4 right-4 p-2 rounded-full ${
+                isDark
+                  ? "bg-gray-700 hover:bg-gray-600"
+                  : "bg-gray-200 hover:bg-gray-300"
+              } transition-colors`}
+              aria-label={isMuted ? "Unmute sound" : "Mute sound"}
+            >
+              {isMuted ? (
+                <VolumeX className="w-5 h-5" />
+              ) : (
+                <Volume2 className="w-5 h-5" />
+              )}
+            </button>
+          )}
+
+          <div className="mb-8 w-full">
+            <div className="relative inline-block">
+              <Trophy className="w-16 h-16 text-yellow-500 mx-auto mb-4" />
+              <Sparkles className="absolute -top-2 -right-2 w-6 h-6 text-yellow-400 animate-spin" />
+              <Sparkles className="absolute -bottom-2 -left-2 w-6 h-6 text-yellow-400 animate-spin" />
+            </div>
+
+            <h2
+              className={`text-4xl font-bold mt-5 ${
+                isDark ? "text-white" : "text-gray-800"
+              } mb-4`}
+            >
+              WINNER!
+            </h2>
+
+            <div className="bg-gradient-to-r from-blue-500 to-purple-600 text-white p-6 rounded-2xl mb-4">
+              <p className="text-3xl font-bold mb-2">{winner.name}</p>
+              {winner.grade && winner.grade.trim() !== "" && (
+                <p className="text-xl opacity-90">
+                  {metaLabel && `${metaLabel}: `}
+                  {winner.grade}
+                </p>
+              )}
+            </div>
+
+            {giftImage && (
+              <div className="mt-6 mb-6 w-full">
+                <img
+                  src={giftImage}
+                  alt="Winner's Prize"
+                  className="w-full h-48 object-cover rounded-xl shadow-lg border-2 border-yellow-400 mx-auto"
+                />
+              </div>
+            )}
+          </div>
+
+          <button
+            onClick={handleManualClose}
+            className="bg-gradient-to-r from-green-500 to-blue-500 hover:from-green-600 hover:to-blue-600 text-white font-bold py-3 px-8 rounded-xl transition-all duration-300 transform hover:scale-105 shadow-lg cursor-pointer"
+          >
+            Continue Balloting
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default WinnerAnnouncement;

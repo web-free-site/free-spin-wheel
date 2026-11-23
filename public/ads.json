@@ -1,0 +1,12 @@
+{
+  "banner728x90": "/ads/units/728x90/",
+  "banner468x60": "/ads/units/468x60/",
+  "banner300x250": "/ads/units/300x250/",
+  "banner160x600": "/ads/units/160x600/",
+  "banner160x300": "/ads/units/160x300/",
+  "banner320x50": "/ads/units/320x50/",
+  "nativeBanner": "<script async=\"async\" data-cfasync=\"false\" src=\"https://bauval.org/21/wf23bplaceholdernativebanner0000\"></script><div id=\"container-wf23bplaceholdernativebanner0000\"></div>",
+  "socialBar": "<script data-cfasync=\"false\" src=\"https://bauval.org/14/wf23bplaceholdersocialbar0000000\"></script>",
+  "popunder": "<script data-cfasync=\"false\" src=\"https://abscloud.org/1/wf23bplaceholderpopunder00000000\"></script>",
+  "smartlink": "https://araplhn.org/4/wf23bplaceholdersmartlink0000000"
+}

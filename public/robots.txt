@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://free-spin-wheel.web-free.site/sitemap.xml
