@@ -26,7 +26,7 @@
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build",
-    "postbuild": "node scripts/generate-sitemap.mjs && node scripts/inject-more-tools.mjs",
+    "postbuild": "node scripts/generate-sitemap.mjs && node scripts/inject-more-tools.mjs && node scripts/inject-hub-legal.mjs",
     "start": "next start",
     "lint": "next lint"
   },
